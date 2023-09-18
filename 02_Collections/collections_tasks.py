@@ -4,6 +4,7 @@ from random import randint, choices
 
 # 1. Create a list of random number of dicts (from 2 to 10).
 list_of_dicts = []
+# Choose random number of dictionaries from 2 to 10.
 num_of_dicts = randint(2, 10)
 
 for i in range(num_of_dicts):
@@ -23,25 +24,31 @@ for i in range(len(list_of_dicts)):
     dict_num = i+1
 
     for key, new_value in list_of_dicts[i].items():
+        # If the key already exists in the working directory then:
         if working_dict.get(key):
-            working_dict[key]['occurance'] += 1
+            # Update number of occurrences.
+            working_dict[key]['occurrence'] += 1
             
             old_key_value = working_dict[key]['value']
 
+            # If new value is bigger than the previous one than update
+            # this value and dictionary number.
             if new_value > old_key_value:
                 working_dict[key].update({'dict_num': dict_num, 'value': new_value})
 
         else:
+            # Save key, dictionary number and value in the working dictionary.
             working_dict[key] = {
                 'dict_num': dict_num,
                 'value': new_value,
-                'occurance': 1
+                'occurrence': 1
             }
 
 common_dict = {}
 
 for k, v in working_dict.items():
-    if v['occurance'] > 1:
+    # If key occurred more than once add to the key name dictionary number.
+    if v['occurrence'] > 1:
         dict_num = working_dict[k]['dict_num']
         common_dict[f'{k}_{dict_num}'] = v['value']
     else:
