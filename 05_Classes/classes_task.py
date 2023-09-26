@@ -10,28 +10,46 @@
 #
 # Each new record should be added to the end of file. Commit file in git for review.
 import datetime as dt
+import os
 
 
 class Feed:
+    file_path = 'news_feed.txt'
+
     def __init__(self, text):
         self.text = text
-        self.insert_date = dt.date.today()
+        self.insert_date = dt.datetime.today()
+        self.feed = ''
+
+    @classmethod
+    def create_feed_file(cls):
+        if os.path.isfile(cls.file_path) is False:
+            with open(cls.file_path, 'w', encoding='utf-8') as file:
+                file.write('NEWS FEED\n\n')
+
+    def save_feed(self):
+        with open('news_feed.txt', 'a', encoding='utf-8') as file:
+            file.write(self.feed)
 
 
 class News(Feed):
     def __init__(self, text, city):
         super().__init__(text)
         self.city = city
+        self.feed = f'--- News ---\n{self.text}\n{self.city}, {self.insert_date}\n'
 
 
 class PrivateAd(Feed):
-    def __init__(self, text, expiration_date):
+    def __init__(self, text, exp_date):
         super().__init__(text)
-        self.expiration_date = dt.datetime.strptime(expiration_date, '%d-%m-%Y')
+        self.exp_date = dt.datetime.strptime(exp_date, '%d-%m-%Y')
+        self.days_left = (self.exp_date - self.insert_date).days
+        self.feed = f'--- Private Ad ---\n{self.text}\nActual until: {self.exp_date}, {self.days_left} days left\n'
 
 
-
-
+# Create new feed file if nox exists.
+Feed.create_feed_file()
+# Take an information from user.
 user_category = input('What category you want to add?\n"News" | "Private ad" | Type custom category: ').lower()
 
 if user_category == 'news':
@@ -39,13 +57,14 @@ if user_category == 'news':
     news_text = input('Provide news text: ')
 
     news = News(news_text, city)
-    print(news.city)
-    print(news.text)
-    print(news.insert_date)
+    news.save_feed()
 
 elif user_category == 'private ad':
     ad_text = input('Provide advertisement text: ')
     expiration_date = input('Provide expiration date (dd-mm-yyyy): ')
-    print('Private ad')
+
+    ad = PrivateAd(ad_text, expiration_date)
+    ad.save_feed()
+
 else:
     print('Custom')
