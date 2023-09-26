@@ -18,7 +18,7 @@ class Feed:
 
     def __init__(self, text):
         self.text = text
-        self.insert_date = dt.datetime.today()
+        self.insert_date = dt.datetime.now()
         self.feed = ''
 
     @classmethod
@@ -29,14 +29,14 @@ class Feed:
 
     def save_feed(self):
         with open('news_feed.txt', 'a', encoding='utf-8') as file:
-            file.write(self.feed)
+            file.write(self.feed + '\n\n')
 
 
 class News(Feed):
     def __init__(self, text, city):
         super().__init__(text)
         self.city = city
-        self.feed = f'--- News ---\n{self.text}\n{self.city}, {self.insert_date}\n'
+        self.feed = f'--- News ---\n{self.text}\n{self.city}, {self.insert_date.strftime("%d-%m-%Y %H:%M")}'
 
 
 class PrivateAd(Feed):
@@ -44,27 +44,49 @@ class PrivateAd(Feed):
         super().__init__(text)
         self.exp_date = dt.datetime.strptime(exp_date, '%d-%m-%Y')
         self.days_left = (self.exp_date - self.insert_date).days
-        self.feed = f'--- Private Ad ---\n{self.text}\nActual until: {self.exp_date}, {self.days_left} days left\n'
+        self.feed = f'--- Private Ad ---\n{self.text}\nActual until: {self.exp_date.strftime("%d-%m-%Y")}, {self.days_left} days left'
+
+
+class Note(Feed):
+    def __init__(self, text, name):
+        super().__init__(text)
+        self.name = name
+        self.feed = f'--- Note ---\n{self.text}\n{self.name}, {self.insert_date.strftime("%d-%m-%Y %H:%M")}'
 
 
 # Create new feed file if nox exists.
 Feed.create_feed_file()
-# Take an information from user.
-user_category = input('What category you want to add?\n"News" | "Private ad" | Type custom category: ').lower()
+next_feed = True
 
-if user_category == 'news':
-    city = input('Provide city name: ').capitalize()
-    news_text = input('Provide news text: ')
+while next_feed:
+    # Take an information from user.
+    user_category = input('What category you want to add?\n"News" | "Private ad" | "Note": ').lower()
 
-    news = News(news_text, city)
-    news.save_feed()
+    if user_category == 'news':
+        user_city = input('Provide city name: ').lower().title()
+        news_text = input('Provide news text: ')
 
-elif user_category == 'private ad':
-    ad_text = input('Provide advertisement text: ')
-    expiration_date = input('Provide expiration date (dd-mm-yyyy): ')
+        news = News(news_text, user_city)
+        news.save_feed()
 
-    ad = PrivateAd(ad_text, expiration_date)
-    ad.save_feed()
+    elif user_category == 'private ad':
+        ad_text = input('Provide advertisement text: ')
+        expiration_date = input('Provide expiration date (dd-mm-yyyy): ')
 
-else:
-    print('Custom')
+        ad = PrivateAd(ad_text, expiration_date)
+        ad.save_feed()
+
+    else:
+        note_text = input('Provide note text: ')
+        user_name = input('Provide your name ').lower().title()
+
+        note = Note(note_text, user_name)
+        note.save_feed()
+
+    next_insert = input('Do you want to insert another (y/n)? ').lower()
+    if next_insert in ['y', 'yes']:
+        next_feed = True
+    else:
+        next_feed = False
+
+print('\nFile has been saved.')
