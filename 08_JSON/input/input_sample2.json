@@ -1,0 +1,17 @@
+{
+  "F001": {
+    "category": "news",
+    "text": "This is the news text from input file 2.",
+    "additional": "Gdańsk"
+  },
+  "F002": {
+    "category": "private ad",
+    "text": "This is the private advertisement text from input file 2.",
+    "additional": "02-10-2023"
+  },
+  "F003": {
+    "category": "note",
+    "text": "This is my note text from input file 2.",
+    "additional": "Zuzka"
+  }
+}

@@ -3,7 +3,7 @@
 # 2.Default folder or user provided file path
 # 3.Remove file if it was successfully processed
 
-from feed_lib import TxtInput, Feed, News, PrivateAd, Note
+from feed_lib import TxtInput, JsonInput, Feed, News, PrivateAd, Note
 
 
 # Get information about input type.
@@ -15,10 +15,20 @@ if data_type == 'f':
 
     if custom_path == 'y' or custom_path == 'yes':
         custom_path = input('Enter path to the txt file with the input: ').lower()
-        file_input = TxtInput(custom_path)
+        if custom_path.endswith('.txt'):
+            file_input = TxtInput(custom_path)
+
+        elif custom_path.endswith('.json'):
+            file_input = JsonInput(custom_path)
+
         file_input.read_input_parameters()
     else:
-        file_input = TxtInput()
+        file_extension = input('What file type to process: json/txt? ')
+        if file_extension.lower() == 'txt':
+            file_input = TxtInput()
+        elif file_extension.lower() == 'json':
+            file_input = JsonInput()
+
         file_input.get_input_from_all_files()
 
 # Create new feed file if nox exists.

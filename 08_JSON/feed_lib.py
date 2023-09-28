@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 import datetime as dt
 import os
+import json
 
 
 class Input(ABC):
     def __init__(self, path='input/'):
         self.path = path
         self.input = []
-        self.extension = ''
         if path == 'input/':
             self.paths_list = [file for file in os.listdir(self.path) if file.endswith(self.extension)]
             self.path_id = 0
@@ -36,8 +36,8 @@ class Input(ABC):
 
 class TxtInput(Input):
     def __init__(self, path='input/'):
-        super().__init__(path)
         self.extension = '.txt'
+        super().__init__(path)
 
     def read_input_parameters(self):
         with open(self.path, 'r', encoding='utf-8') as file:
@@ -53,6 +53,27 @@ class TxtInput(Input):
 
                 self.input.append(input_param)
                 lines = lines[4:]
+
+        self.delete_input_file()
+
+
+class JsonInput(Input):
+    def __init__(self, path='input/'):
+        self.extension = '.json'
+        super().__init__(path)
+
+    def read_input_parameters(self):
+        with open(self.path, 'r', encoding='utf-8') as file:
+            feed = json.load(file)
+
+            for k in feed.keys():
+                input_param = {
+                    'category': feed[k]['category'],
+                    'text': feed[k]['text'],
+                    'additional': feed[k]['additional']
+                }
+
+                self.input.append(input_param)
 
         self.delete_input_file()
 
