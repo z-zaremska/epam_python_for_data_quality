@@ -3,7 +3,7 @@ import os
 
 
 class Input:
-    def __init__(self, path='/input', default=True):
+    def __init__(self, path='input/', default=True):
         self.path = path
         self.input = []
         if default:
@@ -11,12 +11,11 @@ class Input:
             self.path_id = 0
             self.paths_num = len(self.paths_list)
 
-    def change_path(self):
-        if self.paths_list and self.path_id < self.paths_num:
-            self.path = self.paths_list[self.path_id]
-            self.path_id += 1
+    def change_path(self, new_path):
+        self.path = 'input/' + new_path
 
     def delete_input_file(self):
+        """Removes current file with input data."""
         os.remove(self.path)
 
     def read_input_parameters(self):
@@ -35,6 +34,15 @@ class Input:
                 lines = lines[4:]
 
         self.delete_input_file()
+
+    def get_input_from_all_files(self):
+        """
+        Scans all available files in the default directory, retrieve
+        input data and deletes the file.
+        """
+        for path in self.paths_list:
+            self.change_path(path)
+            self.read_input_parameters()
 
 
 class Feed:

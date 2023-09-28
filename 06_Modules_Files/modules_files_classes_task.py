@@ -16,10 +16,10 @@ if data_type == 'f':
     if custom_path == 'y' or custom_path == 'yes':
         custom_path = input('Enter path to the txt file with the input: ').lower()
         file_input = Input(custom_path, False)
+        file_input.read_input_parameters()
     else:
         file_input = Input()
-        file_input.change_path()
-
+        file_input.get_input_from_all_files()
 
 # Create new feed file if nox exists.
 Feed.create_feed_file()
@@ -72,9 +72,9 @@ while next_feed:
         else:
             next_feed = False
     else:
-        file_input.delete_input_file()
         feed_counter += 1
         if feed_counter == len(file_input.input):
             next_feed = False
+
 
 print('\nFile has been saved.')

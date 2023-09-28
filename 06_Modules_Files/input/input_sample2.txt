@@ -1,0 +1,12 @@
+category: 'news';
+text: 'This is the news text from input file 2.';
+additional: 'Gdańsk';
+-
+category: 'private ad';
+text: 'This is the private advertisement text from input file 2.';
+exp_date: '26-10-2023';
+-
+category: 'note';
+text: 'This is my note text from input file 2.';
+name: 'Zuzka';
+-
