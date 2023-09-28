@@ -3,85 +3,14 @@
 # 2.Default folder or user provided file path
 # 3.Remove file if it was successfully processed
 # 4.Apply case normalization functionality form Homework 3/4
-import datetime as dt
-import os
-
-
-class Input:
-    def __init__(self, path='/input', default=True):
-        self.path = path
-        self.input = []
-        if default:
-            self.paths_list = [file for file in os.listdir(self.path) if file.endswith('.txt')]
-            self.path_id = 0
-            self.paths_num = len(self.paths_list)
-
-    def change_path(self):
-        if self.paths_list and self.path_id < self.paths_num:
-            self.path = self.paths_list[self.path_id]
-            self.path_id += 1
-
-    def read_input_parameters(self):
-        with open(self.path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-            loops = len(lines) // 4
-
-            for i in range(loops):
-                input_param = {
-                    'category': lines[0].split("'")[1],
-                    'text': lines[1].split("'")[1],
-                    'additional': lines[2].split("'")[1]
-                }
-
-                self.input.append(input_param)
-                lines = lines[4:]
-
-
-class Feed:
-    file_path = 'news_feed.txt'
-
-    def __init__(self, text):
-        self.text = text
-        self.insert_date = dt.datetime.now()
-        self.feed = ''
-
-    @classmethod
-    def create_feed_file(cls):
-        if os.path.isfile(cls.file_path) is False:
-            with open(cls.file_path, 'w', encoding='utf-8') as file:
-                file.write('NEWS FEED\n\n')
-
-    def save_feed(self):
-        with open('news_feed.txt', 'a', encoding='utf-8') as file:
-            file.write(self.feed + '\n\n')
-
-
-class News(Feed):
-    def __init__(self, text, city):
-        super().__init__(text)
-        self.city = city
-        self.feed = f'--- News ---\n{self.text}\n{self.city}, {self.insert_date.strftime("%d-%m-%Y %H:%M")}'
-
-
-class PrivateAd(Feed):
-    def __init__(self, text, exp_date):
-        super().__init__(text)
-        self.exp_date = dt.datetime.strptime(exp_date, '%d-%m-%Y')
-        self.days_left = (self.exp_date - self.insert_date).days
-        self.feed = f'--- Private Ad ---\n{self.text}\nActual until: {self.exp_date.strftime("%d-%m-%Y")}, {self.days_left} days left'
-
-
-class Note(Feed):
-    def __init__(self, text, name):
-        super().__init__(text)
-        self.name = name
-        self.feed = f'--- Note ---\n{self.text}\n{self.name}, {self.insert_date.strftime("%d-%m-%Y %H:%M")}'
+from feed_lib import Input, Feed, News, PrivateAd, Note
 
 
 # Get information about input type.
 data_type = input('Do you want to enter data manually/by file? (m/f) ').lower()
 
 if data_type == 'f':
+    feed_counter = 0
     custom_path = input('Do you want to provide path to the file? (y/n) ').lower()
 
     if custom_path == 'y' or custom_path == 'yes':
@@ -91,12 +20,9 @@ if data_type == 'f':
         file_input = Input()
         file_input.change_path()
 
-    file_input.read_input_parameters()
-
 
 # Create new feed file if nox exists.
 Feed.create_feed_file()
-feed_counter = 0
 next_feed = True
 
 while next_feed:
@@ -146,6 +72,7 @@ while next_feed:
         else:
             next_feed = False
     else:
+        file_input.delete_input_file()
         feed_counter += 1
         if feed_counter == len(file_input.input):
             next_feed = False
