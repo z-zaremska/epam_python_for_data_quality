@@ -10,12 +10,17 @@ file_path = 'news_feed.txt'
 with open(file_path, encoding='utf-8') as file:
     text = file.read().replace('.', ' ').replace(',', ' ').replace('\n', ' ').replace('-', ' ').replace(':', ' ')
     items = [word for word in text.split(' ') if word.isalpha()]
-    print(items)
 
 # Word count
 words_collection = {}
 for word in items:
+    word = word.lower()
     if words_collection.get(word):
         words_collection[word] += 1
     else:
         words_collection[word] = 1
+
+with open('word_count.csv', 'w', encoding='utf-8', newline='') as f:
+    file_writer = csv.writer(f)
+    for k, v in words_collection.items():
+        file_writer.writerow([k, v])
