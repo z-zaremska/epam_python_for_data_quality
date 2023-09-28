@@ -1,0 +1,26 @@
+NEWS FEED
+
+--- News ---
+This is the news text from input file 1.
+Kraków, 28-09-2023 12:13
+
+--- Private Ad ---
+This is the private advertisement text from input file 1.
+Actual until: 31-10-2023, 32 days left
+
+--- Note ---
+This is my note text from input file 1.
+Susan, 28-09-2023 12:13
+
+--- News ---
+This is the news text from input file 2.
+Gdańsk, 28-09-2023 12:13
+
+--- Private Ad ---
+This is the private advertisement text from input file 2.
+Actual until: 26-10-2023, 27 days left
+
+--- Note ---
+This is my note text from input file 2.
+Zuzka, 28-09-2023 12:13
+
