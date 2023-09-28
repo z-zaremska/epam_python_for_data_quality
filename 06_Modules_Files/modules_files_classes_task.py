@@ -8,9 +8,18 @@ import os
 
 
 class Input:
-    def __init__(self, path='input/input_sample.txt'):
+    def __init__(self, path='/input', default=True):
         self.path = path
         self.input = []
+        if default:
+            self.paths_list = [file for file in os.listdir(self.path) if file.endswith('.txt')]
+            self.path_id = 0
+            self.paths_num = len(self.paths_list)
+
+    def change_path(self):
+        if self.paths_list and self.path_id < self.paths_num:
+            self.path = self.paths_list[self.path_id]
+            self.path_id += 1
 
     def read_input_parameters(self):
         with open(self.path, 'r', encoding='utf-8') as file:
@@ -69,6 +78,7 @@ class Note(Feed):
         self.feed = f'--- Note ---\n{self.text}\n{self.name}, {self.insert_date.strftime("%d-%m-%Y %H:%M")}'
 
 
+# Get information about input type.
 data_type = input('Do you want to enter data manually/by file? (m/f) ').lower()
 
 if data_type == 'f':
@@ -76,9 +86,10 @@ if data_type == 'f':
 
     if custom_path == 'y' or custom_path == 'yes':
         custom_path = input('Enter path to the txt file with the input: ').lower()
-        file_input = Input(custom_path)
+        file_input = Input(custom_path, False)
     else:
         file_input = Input()
+        file_input.change_path()
 
     file_input.read_input_parameters()
 
