@@ -4,7 +4,7 @@
 # 3.Implement “no duplicate” check.
 from feed_lib import TxtInput, JsonInput, XmlInput, Feed, News, PrivateAd, Note, DatabaseManager
 
-db_manager = DatabaseManager('db_task_9')
+db_manager = DatabaseManager('task_database')
 db_manager.create_tables()
 
 
@@ -96,3 +96,5 @@ while next_feed:
 
 
 print('\nFile has been saved.')
+db_manager.cursor.execute('SELECT * FROM notes;')
+print(db_manager.cursor.fetchall())

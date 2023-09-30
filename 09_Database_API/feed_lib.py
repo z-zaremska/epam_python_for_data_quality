@@ -8,8 +8,7 @@ import xml.etree.ElementTree as ET
 
 class DatabaseManager:
     def __init__(self, db_name: str):
-        driver = '{SQLite3 ODBC Driver}'
-        with pyodbc.connect("Driver=SQLite3 ODBC Driver;"f"Database={db_name}") as db_conn:
+        with pyodbc.connect("Driver=SQLite3 ODBC Driver;"f"Database={db_name}.db") as db_conn:
             self.cursor = db_conn.cursor()
 
     def create_tables(self):
@@ -18,10 +17,35 @@ class DatabaseManager:
         self.cursor.execute('CREATE TABLE IF NOT EXISTS private_ads (ad_text TEXT, exp_date TEXT);')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS notes (note_text TEXT, name TEXT);')
 
+    def check_for_duplicates(self, table_name, text, additional):
+        """Checks if in the table data already exists."""
+        if table_name == 'news':
+            text_col = 'news_text'
+            additional_col = 'city'
+        elif table_name == 'private_ads':
+            text_col = 'ad_text'
+            additional_col = 'exp_date'
+        elif table_name == 'notes':
+            text_col = 'note_text'
+            additional_col = 'name'
+
+        self.cursor.execute(
+            f"""SELECT COUNT(*)
+            FROM {table_name}
+            WHERE
+                {text_col} = '{text}' AND
+                {additional_col} = '{additional}';""")
+
+        result = self.cursor.fetchone()[0]
+        if result == 0:
+            return True
+        else:
+            print('Data already in the database.')
+
     def insert_data(self, table_name, text, additional):
         """Inserts data into matching table."""
-        self.cursor.execute(f"INSERT INTO {table_name} VALUES('{text}', '{additional}');")
-
+        if self.check_for_duplicates(table_name, text, additional):
+            self.cursor.execute(f"INSERT INTO {table_name} VALUES('{text}', '{additional}');")
 
 class Input(ABC):
     def __init__(self, path='input/'):
