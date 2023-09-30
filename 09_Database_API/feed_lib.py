@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 
 class DatabaseManager:
+    """Perform actions on sqlite database."""
     def __init__(self, db_name: str):
         with pyodbc.connect("Driver=SQLite3 ODBC Driver;"f"Database={db_name}.db", autocommit=True) as db_conn:
             self.cursor = db_conn.cursor()
@@ -17,7 +18,7 @@ class DatabaseManager:
         self.cursor.execute('CREATE TABLE IF NOT EXISTS private_ads (ad_text TEXT, exp_date TEXT);')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS notes (note_text TEXT, name TEXT);')
 
-    def check_for_duplicates(self, table_name, text, additional):
+    def check_for_duplicates(self, table_name: str, text: str, additional: str):
         """Checks if in the table data already exists."""
         if table_name == 'news':
             text_col = 'news_text'
@@ -42,12 +43,14 @@ class DatabaseManager:
         else:
             print('Data already in the database.')
 
-    def insert_data(self, table_name, text, additional):
+    def insert_data(self, table_name: str, text: str, additional: str):
         """Inserts data into matching table."""
         if self.check_for_duplicates(table_name, text, additional):
             self.cursor.execute(f"INSERT INTO {table_name} VALUES('{text}', '{additional}');")
 
+
 class Input(ABC):
+    """Handle input data retrieval from given file."""
     def __init__(self, path='input/'):
         self.path = path
         self.input = []
@@ -56,7 +59,8 @@ class Input(ABC):
             self.path_id = 0
             self.paths_num = len(self.paths_list)
 
-    def change_path(self, new_path):
+    def change_path(self, new_path: str):
+        """Changes path to the file."""
         self.path = 'input/' + new_path
 
     def delete_input_file(self):
@@ -65,6 +69,7 @@ class Input(ABC):
 
     @abstractmethod
     def read_input_parameters(self):
+        """Retrieve input data from the file."""
         pass
 
     def get_input_from_all_files(self):
@@ -78,6 +83,7 @@ class Input(ABC):
 
 
 class TxtInput(Input):
+    """Handle input data retrieval from txt files."""
     def __init__(self, path='input/'):
         self.extension = '.txt'
         super().__init__(path)
@@ -101,6 +107,7 @@ class TxtInput(Input):
 
 
 class JsonInput(Input):
+    """Handle input data retrieval from json files."""
     def __init__(self, path='input/'):
         self.extension = '.json'
         super().__init__(path)
@@ -122,6 +129,7 @@ class JsonInput(Input):
 
 
 class XmlInput(Input):
+    """Handle input data retrieval from xml files."""
     def __init__(self, path='input/'):
         self.extension = '.xml'
         super().__init__(path)
@@ -144,33 +152,38 @@ class XmlInput(Input):
 
 
 class Feed:
+    """Represents feed provided by user."""
     file_path = 'news_feed.txt'
 
-    def __init__(self, text):
+    def __init__(self, text: str):
         self.text = text
         self.insert_date = dt.datetime.now()
         self.feed = ''
 
     @classmethod
     def create_feed_file(cls):
+        """Creates new txt file with all feed provided by user."""
         if os.path.isfile(cls.file_path) is False:
             with open(cls.file_path, 'w', encoding='utf-8') as file:
                 file.write('NEWS FEED\n\n')
 
     def save_feed(self):
+        """Saves provided feed into the txt file."""
         with open('news_feed.txt', 'a', encoding='utf-8') as file:
             file.write(self.feed + '\n\n')
 
 
 class News(Feed):
-    def __init__(self, text, city):
+    """Represents news feed provided by user."""
+    def __init__(self, text: str, city: str):
         super().__init__(text)
         self.city = city
         self.feed = f'--- News ---\n{self.text}\n{self.city}, {self.insert_date.strftime("%d-%m-%Y %H:%M")}'
 
 
 class PrivateAd(Feed):
-    def __init__(self, text, exp_date):
+    """Represents private advertisement feed provided by user."""
+    def __init__(self, text: str, exp_date: str):
         super().__init__(text)
         self.exp_date = dt.datetime.strptime(exp_date, '%d-%m-%Y')
         self.days_left = (self.exp_date - self.insert_date).days
@@ -178,7 +191,8 @@ class PrivateAd(Feed):
 
 
 class Note(Feed):
-    def __init__(self, text, name):
+    """Represents note feed provided by user."""
+    def __init__(self, text: str, name: str):
         super().__init__(text)
         self.name = name
         self.feed = f'--- Note ---\n{self.text}\n{self.name}, {self.insert_date.strftime("%d-%m-%Y %H:%M")}'
