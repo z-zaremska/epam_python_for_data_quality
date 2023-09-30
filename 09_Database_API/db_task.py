@@ -96,5 +96,3 @@ while next_feed:
 
 
 print('\nFile has been saved.')
-db_manager.cursor.execute('SELECT * FROM notes;')
-print(db_manager.cursor.fetchall())
