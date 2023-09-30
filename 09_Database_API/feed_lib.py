@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 class DatabaseManager:
     def __init__(self, db_name: str):
-        with pyodbc.connect("Driver=SQLite3 ODBC Driver;"f"Database={db_name}.db") as db_conn:
+        with pyodbc.connect("Driver=SQLite3 ODBC Driver;"f"Database={db_name}.db", autocommit=True) as db_conn:
             self.cursor = db_conn.cursor()
 
     def create_tables(self):
